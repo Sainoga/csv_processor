@@ -47,3 +47,43 @@ def display_report(report_result) -> None:
     print("=" * 50)
     print(tabulate(report_result.data, headers=report_result.headers, tablefmt="grid"))
 
+def main(args: Optional[List[str]] = None) -> int:
+
+    parser = create_parser()
+    
+    try:
+        parsed_args = parser.parse_args(args)
+        
+        file_paths = Validator.validate_files(parsed_args.files)
+        report_type = Validator.validate_report_type(
+            parsed_args.report, 
+            list(PROCESSORS.keys())
+        )
+        
+        reader = CSVReader()
+        products = reader.read_files(file_paths)
+        
+        if not products:
+            print("No valid products found in the provided files.")
+            return 0
+        
+        processor = PROCESSORS[report_type]
+        report_result = processor.process(products)
+        
+        display_report(report_result)
+        
+        return 0
+        
+    except CSVProcessorError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        print("\nOperation cancelled by user.", file=sys.stderr)
+        return 1
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
