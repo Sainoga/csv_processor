@@ -6,7 +6,7 @@ from .base import BaseProcessor
 
 class AverageRatingProcessor(BaseProcessor):
 
-        @property
+    @property
     def report_name(self) -> str:
         return "average-rating"
     
@@ -18,7 +18,6 @@ class AverageRatingProcessor(BaseProcessor):
                 data=[]
             )
         
-        # Group products by brand and calculate average rating
         brand_ratings: Dict[str, List[float]] = defaultdict(list)
         
         for product in products:
