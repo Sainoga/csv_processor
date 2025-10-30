@@ -20,8 +20,8 @@ class TestAverageRatingProcessor:
     def test_process_empty_list(self, processor):
         result = processor.process([])
         
-        assert result.title == "average rating on brands"
-        assert result.headers == ["Brand", "Average rating"]
+        assert result.title == "Average Rating by Brand"
+        assert result.headers == ["Brand", "Average Rating"]
         assert result.data == []
     
     def test_process_single_brand(self, processor):

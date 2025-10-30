@@ -3,6 +3,7 @@ from typing import List
 
 from .exceptions import FileValidationError, ReportNotFoundError
 
+
 class Validator:
     @staticmethod
     def validate_files(file_paths: List[str]) -> List[Path]:
@@ -14,7 +15,10 @@ class Validator:
             path = Path(file_path)
 
             if not path.exists():
-                raise FileValidationError(f'Path os not a file: {file_path}')
+                raise FileValidationError(f'File does not exist: {file_path}')
+            
+            if not path.is_file():
+                raise FileValidationError(f'Path is not a file: {file_path}')
             
             if path.suffix.lower() != '.csv':
                 raise FileValidationError(f'File is not CSV: {file_path}')

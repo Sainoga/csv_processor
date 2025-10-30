@@ -24,9 +24,9 @@ class TestValidator:
         assert all(isinstance(p, Path) for p in result)
     
     @pytest.mark.parametrize("file_paths,expected_error", [
-        ([], "No files"),
-        (["nonexistent.csv"], "File doesnt exist"),
-        (["."], "path is on a file"),  
+        ([], "No files provided"),
+        (["nonexistent.csv"], "File does not exist"),
+        (["."], "Path is not a file"),
     ])
     def test_validate_files_invalid(self, file_paths, expected_error, tmp_path: Path):
         with pytest.raises(FileValidationError) as exc_info:
@@ -41,7 +41,7 @@ class TestValidator:
         with pytest.raises(FileValidationError) as exc_info:
             Validator.validate_files([str(wrong_file)])
         
-        assert "CSV" in str(exc_info.value) or "csv" in str(exc_info.value)
+        assert "File is not CSV" in str(exc_info.value)
     
     def test_validate_report_type_valid(self):
         available_reports = ["report1", "report2", "average-rating"]

@@ -15,7 +15,7 @@ class TestCLI:
         parser = create_parser()
         
         assert parser is not None
-        assert "Proccessing CSV files" in parser.description
+        assert "Process CSV files" in parser.description 
     
     def test_parser_help(self):
         parser = create_parser()

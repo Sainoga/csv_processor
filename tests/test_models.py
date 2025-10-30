@@ -61,7 +61,7 @@ class TestCSVReader:
         with pytest.raises(InvalidCSVFormatError) as exc_info:
             reader._read_single_file(invalid_csv_file)
         
-        assert "should contain colums" in str(exc_info.value)
+        assert "must contain columns" in str(exc_info.value)
     
     def test_read_single_file_nonexistent(self):
         reader = CSVReader()
