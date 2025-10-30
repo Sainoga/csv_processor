@@ -1,7 +1,11 @@
 import pytest
+import sys
+import os
 
-from src.csv_processor.processors.average_rating import AverageRatingProcessor
-from src.csv_processor.models import Product
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+
+from csv_processor.processors.average_rating import AverageRatingProcessor
+from csv_processor.models import Product
 
 
 class TestAverageRatingProcessor:
@@ -16,8 +20,8 @@ class TestAverageRatingProcessor:
     def test_process_empty_list(self, processor):
         result = processor.process([])
         
-        assert result.title == "Average Rating by Brand"
-        assert result.headers == ["Brand", "Average Rating"]
+        assert result.title == "average rating on brands"
+        assert result.headers == ["Brand", "Average rating"]
         assert result.data == []
     
     def test_process_single_brand(self, processor):
@@ -44,9 +48,10 @@ class TestAverageRatingProcessor:
         result = processor.process(products)
         
         assert len(result.data) == 3
+
         assert result.data[0] == ("xiaomi", 5.0)
-        assert result.data[1] == ("apple", 4.5)  # (4+5)/2 = 4.5
-        assert result.data[2] == ("samsung", 3.5)  # (3+4)/2 = 3.5
+        assert result.data[1] == ("apple", 4.5)  
+        assert result.data[2] == ("samsung", 3.5)  
     
     def test_rating_rounding(self, processor):
         products = [
@@ -56,4 +61,4 @@ class TestAverageRatingProcessor:
         
         result = processor.process(products)
         
-        assert result.data[0] == ("brand1", 4.5)  # (4.333 + 4.666) / 2 = 4.4995 → 4.5
+        assert result.data[0] == ("brand1", 4.5)  

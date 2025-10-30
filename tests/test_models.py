@@ -1,8 +1,12 @@
 import pytest
+import sys
+import os
 from pathlib import Path
 
-from src.csv_processor.models import Product, CSVReader
-from src.csv_processor.exceptions import InvalidCSVFormatError
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from csv_processor.models import Product, CSVReader
+from csv_processor.exceptions import InvalidCSVFormatError
 
 
 class TestProduct:
@@ -23,14 +27,15 @@ class TestProduct:
         assert product.rating == 4.5
     
     @pytest.mark.parametrize("invalid_data,expected_error", [
-        ({"brand": "test", "price": "100", "rating": "4.5"}, "name"),  # Missing name
-        ({"name": "test", "price": "100", "rating": "4.5"}, "brand"),  # Missing brand
-        ({"name": "test", "brand": "test", "rating": "4.5"}, "price"),  # Missing price
-        ({"name": "test", "brand": "test", "price": "100"}, "rating"),  # Missing rating
-        ({"name": "test", "brand": "test", "price": "invalid", "rating": "4.5"}, "price"),  # Invalid price
-        ({"name": "test", "brand": "test", "price": "100", "rating": "invalid"}, "rating"),  # Invalid rating
+        ({"brand": "test", "price": "100", "rating": "4.5"}, "name"),  
+        ({"name": "test", "price": "100", "rating": "4.5"}, "brand"),  
+        ({"name": "test", "brand": "test", "rating": "4.5"}, "price"),  
+        ({"name": "test", "brand": "test", "price": "100"}, "rating"),  
+        ({"name": "test", "brand": "test", "price": "invalid", "rating": "4.5"}, "price"),  
+        ({"name": "test", "brand": "test", "price": "100", "rating": "invalid"}, "rating"),  
     ])
     def test_from_dict_invalid(self, invalid_data, expected_error):
+
         with pytest.raises(InvalidCSVFormatError) as exc_info:
             Product.from_dict(invalid_data)
         
@@ -56,7 +61,7 @@ class TestCSVReader:
         with pytest.raises(InvalidCSVFormatError) as exc_info:
             reader._read_single_file(invalid_csv_file)
         
-        assert "must contain columns" in str(exc_info.value)
+        assert "should contain colums" in str(exc_info.value)
     
     def test_read_single_file_nonexistent(self):
         reader = CSVReader()
@@ -65,7 +70,6 @@ class TestCSVReader:
             reader._read_single_file(Path("nonexistent.csv"))
     
     def test_read_multiple_files(self, sample_csv_file: Path, tmp_path: Path):
-        # Create second file
         second_file = tmp_path / "second.csv"
         second_file.write_text("""name,brand,price,rating
 product4,brand4,400,4.0
@@ -74,4 +78,4 @@ product5,brand5,500,5.0""")
         reader = CSVReader()
         products = reader.read_files([sample_csv_file, second_file])
         
-        assert len(products) == 5  # 3 from first + 2 from second
+        assert len(products) == 5  

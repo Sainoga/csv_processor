@@ -1,6 +1,12 @@
 import pytest
+import sys
+import os
 from pathlib import Path
-from src.csv_processor.models import Product
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from csv_processor.models import Product
+
 
 @pytest.fixture
 def sample_products() -> list[Product]:
@@ -14,6 +20,7 @@ def sample_products() -> list[Product]:
 
 @pytest.fixture
 def sample_csv_file(tmp_path: Path) -> Path:
+    """Создает временный CSV файл для тестирования."""
     csv_content = """name,brand,price,rating
 iphone,apple,999,4.9
 galaxy,samsung,1199,4.8

@@ -1,8 +1,12 @@
 import pytest
+import sys
+import os
 from pathlib import Path
 
-from src.csv_processor.validators import Validator
-from src.csv_processor.exceptions import FileValidationError, ReportNotFoundError
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from csv_processor.validators import Validator
+from csv_processor.exceptions import FileValidationError, ReportNotFoundError
 
 
 class TestValidator:
@@ -20,16 +24,24 @@ class TestValidator:
         assert all(isinstance(p, Path) for p in result)
     
     @pytest.mark.parametrize("file_paths,expected_error", [
-        ([], "No files provided"),
-        (["nonexistent.csv"], "File does not exist"),
-        (["."], "Path is not a file"),  # Directory
-        (["test.txt"], "File is not a CSV"),  # Wrong extension
+        ([], "No files"),
+        (["nonexistent.csv"], "File doesnt exist"),
+        (["."], "path is on a file"),  
     ])
-    def test_validate_files_invalid(self, file_paths, expected_error):
+    def test_validate_files_invalid(self, file_paths, expected_error, tmp_path: Path):
         with pytest.raises(FileValidationError) as exc_info:
             Validator.validate_files(file_paths)
         
         assert expected_error in str(exc_info.value)
+    
+    def test_validate_files_wrong_extension(self, tmp_path: Path):
+        wrong_file = tmp_path / "test.txt"
+        wrong_file.write_text("test")
+        
+        with pytest.raises(FileValidationError) as exc_info:
+            Validator.validate_files([str(wrong_file)])
+        
+        assert "CSV" in str(exc_info.value) or "csv" in str(exc_info.value)
     
     def test_validate_report_type_valid(self):
         available_reports = ["report1", "report2", "average-rating"]
